@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React + TS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&family=Itim&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            color: var(--darkgray);
+            box-sizing: border-box;
+        }
+
+
+        :root {
+            --darkgray: #383838;
+            --lowgray: #D9D9D9;
+            --gray: #E7E7E7;
+            --lightgray: #F0F0F0;
+            --cyan: #2E9595;
+            --red: #FF5858;
+
+        }
+
+        html {
+            font-size: clamp(13px, 1rem, 1.5vw);
+        }
+
+        body {
+            font-family: 'Itim', sans-serif;
+            background-color: #fff;
+            padding-bottom: 2rem;
+        }
+
+        button {
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        .App {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .App>.left,
+        .App>.right {
+            flex-basis: 500px;
+            flex-grow: 1;
+        }
+
+        /* Calendário */
+
+        #schedule {
+            margin-block: 1rem;
+            padding-inline: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .schedule-container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .table {
+            position: relative;
+        }
+
+        .table .arrow {
+            position: absolute;
+            top: 50%;
+            cursor: pointer;
+            padding: 1rem .5rem;
+            transition: .2s;
+        }
+
+        .inspect-date {
+            position: absolute;
+            right: 1rem;
+            top: 0;
+            transform: translateY(-100%);
+        }
+
+        .inspect-date .month,
+        .inspect-date .year {
+            display: inline-block;
+            padding: .5rem;
+        }
+
+        .inspect-date .month {
+            background-color: var(--lowgray);
+        }
+
+        .inspect-date .year {
+            background-color: var(--gray);
+        }
+
+        .table .arrow:hover {
+            background-color: var(--gray);
+        }
+
+        .table .arrow svg {
+            font-size: 2rem;
+        }
+
+        .arrow-left {
+            left: 0;
+            transform: translateY(-50%) translateX(-100%);
+            border-radius: 15px 0 0 15px;
+        }
+
+        .arrow-right {
+            right: 0;
+            transform: translateY(-50%) translateX(100%);
+            border-radius: 0px 15px 15px 0px;
+        }
+
+        table {
+            border-collapse: collapse;
+            max-width: 400px;
+            width: 100%;
+            background-color: var(--red);
+            border-radius: 20px;
+        }
+
+        .schedule__title {
+            font-family: 'Itim', sans-serif;
+            font-size: 40px;
+            margin-bottom: 1rem;
+        }
+
+        tbody {
+            border-collapse: collapse;
+            background-color: var(--lightgray);
+        }
+
+        tr {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            justify-items: stretch;
+
+        }
+
+        td,
+        th {
+            text-align: center;
+        }
+
+        td {
+            aspect-ratio: 1;
+        }
+
+        th {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            aspect-ratio: 1;
+        }
+
+        td button {
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            transition: .2s;
+        }
+
+
+        td button:hover {
+            color: white;
+            background-color: var(--cyan);
+        }
+
+        button.scheduled {
+            background-color: var(--cyan);
+        }
+
+        td button:disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        td button:disabled:hover {
+            background-color: unset;
+        }
+
+        /* schedule-date */
+
+        .schedule-date {
+            position: relative;
+            padding: 2rem 4rem;
+            min-height: 300px;
+            background-color: var(--cyan);
+            border-bottom-right-radius: 200px;
+        }
+
+        .schedule-date h1 {
+            color: white;
+            font-size: 3.5rem;
+        }
+
+        .schedule-date .scheduled-state-title {
+            margin-bottom: .5rem;
+            font-size: 1.5rem;
+        }
+
+        .schedule-date span {
+            display: block;
+        }
+
+        .schedule-date .day {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 60px;
+        }
+
+        .schedule-date .month {
+            color: white;
+            font-size: 50px;
+        }
+
+        .schedule-date .year {
+            color: white;
+            font-size: 30px;
+        }
+
+
+        /* Formulário */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: center;
+            padding: 1rem 6rem 1rem 4rem;
+            background-color: var(--gray);
+            border-bottom-right-radius: 20px;
+            width: max-content;
+        }
+
+        form label {
+            font-size: 1.5rem;
+            margin-bottom: .25rem;
+        }
+
+        form input {
+            padding: 1rem 2rem 1rem 1rem;
+            border: none;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+
+        form button {
+            font-family: 'Itim', sans-serif;
+            padding: .75rem 3rem;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--cyan);
+            font-size: 2rem;
+            color: white;
+        }
+
+
+        @media screen and (max-width:900px) {
+
+            .App {
+                flex-direction: column;
+            }
+
+            .App>.left,
+            .App>.right {
+                flex-basis: auto;
+            }
+
+            .schedule-date {
+                min-height: unset;
+            }
+
+            .schedule-date,
+            form {
+                border-radius: unset;
+                width: 100%;
+                padding: 2rem 1rem;
+            }
+
+            #schedule .table {
+                display: flex;
+                flex-direction: column-reverse;
+            }
+
+            #schedule .arrow-container {
+                margin-top: .5rem;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .table .arrow {
+                position: static;
+                transform: unset;
+                padding: 1rem;
+                background-color: var(--gray);
+            }
+
+            .schedule__title {
+                margin-bottom: 2.5rem;
+            }
+
+
+            form input,
+            form button {
+                padding: 2rem 1rem;
+                width: 100%;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
