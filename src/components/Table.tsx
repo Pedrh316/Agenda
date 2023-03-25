@@ -1,32 +1,33 @@
-import { useEffect, useMemo } from 'react'
-import { loadScheduleData } from '../controllers/loadTableData'
-import { useScheduleContext } from '../hooks/useScheduleContext'
-import Day from './Day'
+import { useLayoutEffect, useMemo } from 'react'
 import { nanoid } from 'nanoid'
-import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
+import { useScheduleContext } from '../hooks/useScheduleContext'
+import { loadScheduleData } from '../controllers/loadTableData'
 import { transpileDate } from '../controllers/transpileDate'
 import { updateInspectDate } from '../controllers/updateInspectDate'
+import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
+import Day from './Day'
 
 const Table = () => {
     const { inspectDate, daysData, setInspectDate, setDaysData } = useScheduleContext();
-    const daysDataNum:number[][] = useMemo(() => loadScheduleData(inspectDate.getFullYear(), inspectDate.getMonth()), [inspectDate]);    
-    const allDays = useMemo(() => daysData.map(line => <tr>{line.map(item => <td><Day {...item}/></td> )}</tr>), [daysData])
-    
-    useEffect(() => {
+    const {year:inspectYear, month:inspectMonth, monthNum: inspectMonthNum} = transpileDate(inspectDate);
+    // recalcula dayDataNum toda vez que a pessoa mudar o mês (fazer nova inspeção).
+    // esse processo é necessário para que o controller loadScheduleData retorne o array de arrays de dias de maneira que possam
+    // ser ordenados nas colunas certas ao serem usados na renderização visual.
+    const daysDataNum:number[][] = useMemo(() => loadScheduleData(inspectYear, inspectMonthNum), [inspectDate]);
+
+    useLayoutEffect(() => {
         setDaysData(daysDataNum.map(line => line.map(day => ({day, id:nanoid()}))))
-    }, [inspectDate])
-
-
-    const {month:inspectMonth, year:inspectYear} = transpileDate(inspectDate);
-    const handleInspectDate = (n:number) => {
-        updateInspectDate({inspectDate, setInspectDate, n})
-    }
+    }, [inspectDate])    
+    
+    
+    const handleClick = (n:number) => updateInspectDate({inspectDate, setInspectDate, n})
+    const allDays = useMemo(() => daysData.map(line => <tr key={nanoid()}>{line.map(item => <td key={item.id}><Day {...item}/></td> )}</tr>), [daysData])
 
     return (
         <div className="table">
             <div className='arrow-container'>
-                <button className="arrow arrow-left" onClick={() => handleInspectDate(-1)}><BsChevronLeft/></button>
-                <button className="arrow arrow-right" onClick={() => handleInspectDate(1)}><BsChevronRight/></button>
+                <button className="arrow arrow-left" onClick={() => handleClick(-1)}><BsChevronLeft/></button>
+                <button className="arrow arrow-right" onClick={() => handleClick(1)}><BsChevronRight/></button>
             </div>
             <table>
                 <caption className='inspect-date'>

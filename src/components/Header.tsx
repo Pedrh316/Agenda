@@ -5,8 +5,7 @@ import { useScheduleContext } from '../hooks/useScheduleContext'
 const Header = () => {
 
     const { scheduleDate } = useScheduleContext();
-    const isScheduled = scheduleDate !== null 
-
+    const isScheduled = scheduleDate !== null;
     const schedullingData = useMemo(() => isScheduled && {...transpileDate(scheduleDate)}, [scheduleDate]);
 
     return (
