@@ -1,5 +1,5 @@
 import { analysisDate } from '../controllers/analysisDate';
-import { toggleSchedule } from '../controllers/toggleSchedule';
+import { defineSchedulling } from '../controllers/defineSchedulling';
 import { DayType } from '../customTypes/DayType'
 import { useScheduleContext } from '../hooks/useScheduleContext';
 
@@ -14,7 +14,7 @@ const DayActive = (dayData:DayType) => {
     return (
         <button 
             className={buttonClassName}
-            onClick={() => toggleSchedule(scheduleContextData, dayData)}
+            onClick={() => defineSchedulling(scheduleContextData, dayData)}
             disabled={!isValidData}
         >
                 { dayToRender }
